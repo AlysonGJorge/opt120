@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const TaskController= require('../controllers/TaskController');
 
-router.post('/novouser', TaskController.novoUsuario);
+router.post('/user', TaskController.novoUsuario);
+
+router.get('/user', TaskController.todosUsuarios)
 
 module.exports = router;
