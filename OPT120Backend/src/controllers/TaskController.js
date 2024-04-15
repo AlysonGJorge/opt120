@@ -1,50 +1,54 @@
 const database = require('../database/connection');
 
 class TaskController {
-    novoUsuario(request, response) {
-        const {id_user, nm_user, nm_email, cd_senha } = request.body;
-
-        console.log(id_user, nm_user, nm_email, cd_senha)
-
-        database.insert({ id_user, nm_user, nm_email, cd_senha }).table("usuario").then(data => {
-            console.log(data);
-            response.json({ message: "Usuário criado com sucesso" });
-        }).catch(error => {
-            console.log(error);
-        });
-    };
-
-    todosUsuarios(request, response) {
-        database.select("*").from("usuario").then(results => {
-            response.json(results);
-        }).catch(error => {
-            console.log("Database error:", error);
-            response.status(500).json({error: 'An error occurred while fetching users'});
-        });
-    }
-
     novaTask(request, response) {
-        const {id_user, nm_user, nm_email, cd_senha } = request.body;
+        const {id_atividade,ds_titulo,ds_atividade,dt_limite } = request.body;
 
-        console.log(id_user, nm_user, nm_email, cd_senha)
+        console.log(id_atividade,ds_titulo,ds_atividade,dt_limite)
 
-        database.insert({ id_user, nm_user, nm_email, cd_senha }).table("usuario").then(data => {
+        database.insert({id_atividade,ds_titulo,ds_atividade,dt_limite }).table("atividade").then(data => {
             console.log(data);
-            response.json({ message: "Usuário criado com sucesso" });
+            response.json({ message: "Atividade criada com sucesso" });
         }).catch(error => {
             console.log(error);
         });
     };
 
     todasTask(request, response) {
-        database.select("*").from("usuario").then(results => {
-            response.json(results);
+        database.select("*").table("atividade").then(atividades => { 
+            console.log(atividades)
+            response.json(atividades);
         }).catch(error => {
             console.log("Database error:", error);
-            response.status(500).json({error: 'An error occurred while fetching users'});
+            response.status(500).json({error: 'um erro ocorreu ao puxar todas as task'});
+        });
+    }
+
+    umaTask(request, response) {
+        const id = request.params
+        console.log(id)
+        database.select("*").table("atividade").where(id).then(atividade => { 
+            console.log(atividade)
+            response.json(atividade);
+        }).catch(error => {
+            console.log("Database error:", error);
+            response.status(500).json({error: 'um erro ocorreu ao puxar uma task'});
+        });
+    }
+
+    atualizaTask(request, response) {
+        const id = request.params
+        const {descricao} = params.body
+        console.log(id)
+        database.where(id).update({descricao:descricao}).table("atividade").then(atividade => { 
+            response.json("atividade atualizada com sucesso");
+        }).catch(error => {
+            console.log("Database error:", error);
+            response.status(500).json({error: 'ao atualizar uma tarefa'});
         });
     }
 
 
 }
+
 module.exports = new TaskController();
