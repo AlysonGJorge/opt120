@@ -1,39 +1,55 @@
 const database = require('../database/connection');
 
-class UserController {
-    novoUsuario(request, response) {
-        const {id_user,nm_user,nm_email,cd_senha} = request.body;
+class UserTaskController {
+    usuarioFezTarefa(request, response) {
+        const {id_user,id_atividade,dt_entrega,nr_nota} = request.body;
 
-        console.log(id_user, nm_user, nm_email, cd_senha)
-
-        database.insert({ id_user, nm_user, nm_email, cd_senha }).table("usuario").then(data => {
-            console.log(data);
-            response.json({ message: "Usuário criado com sucesso" });
+        database.insert({ id_user, id_atividade, dt_entrega, nr_nota }).table("usuario_atividade").then(data => {
+            response.json({ message: "Usuário fez atividade" });
         }).catch(error => {
             console.log(error);
         });
     };
 
-    todosUsuarios(request, response) {
-        database.select("*").from("usuario").then(results => {
-            response.json(results);
-        }).catch(error => {
-            console.log("Database error:", error);
-            response.status(500).json({error: 'An error occurred while fetching users'});
-        });
+        todosUsuariosFizeramTask(request, response) {
+            const id_atividade = request.params.id_atividade;
+            database
+                .select("usuario.id_user", "usuario.nm_user")
+                .from("usuario")
+                .join("usuario_atividade", "usuario.id_user", "=", "usuario_atividade.id_user")
+                .where("usuario_atividade.id_atividade", id_atividade)
+                .then(results => {
+                    response.json(results);
+                }).catch(error => {
+                    response.status(500).json({error: 'Ninguém fez essa atividade'});
+                });
+        }
+    
+        todasTarefasUsuarioFez(request, response) {
+            const id_user = request.params.id_user;
+            database
+                .select("atividade.id_atividade", "atividade.ds_titulo")
+                .from("atividade")
+                .join("usuario_atividade", "atividade.id_atividade", "=", "usuario_atividade.id_atividade")
+                .where("usuario_atividade.id_user", id_user)
+                .then(results => {
+                    response.json(results);
+                }).catch(error => {
+                    console.log("Database error:", error);
+                    response.status(500).json({error: 'Usuário não fez nenhuma tarefa'});
+                });
+        }
+    tudotudao(request, response) {
+        const id_user = request.params.id_user;
+        database
+            .select("*")
+            .from("usuario_atividade")
+            .then(results => {
+                response.json(results);
+            }).catch(error => {
+                console.log("Database error:", error);
+                response.status(500).json({error: 'Usuário não fez nenhuma tarefa'});
+            });
     }
-
-    umUsuario(request, response) {
-        const id = request.params
-        console.log(id)
-        database.select("*").table("usuario").where(id).then(usuario => { 
-            console.log(usuario)
-            response.json(usuario);
-        }).catch(error => {
-            console.log("Database error:", error);
-            response.status(500).json({error: 'Um erro ocorreu ao puxar um usuárioS'});
-        });
-    }
-
 }
-module.exports = new UserController();
+module.exports = new UserTaskController();

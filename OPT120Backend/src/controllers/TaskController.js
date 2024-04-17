@@ -2,13 +2,13 @@ const database = require('../database/connection');
 
 class TaskController {
     novaTask(request, response) {
-        const {id_atividade,ds_titulo,ds_atividade,dt_limite } = request.body;
+        const {ds_titulo,ds_atividade,dt_limite } = request.body;
 
-        console.log(id_atividade,ds_titulo,ds_atividade,dt_limite)
+        console.log(ds_titulo,ds_atividade,dt_limite)
 
-        database.insert({id_atividade,ds_titulo,ds_atividade,dt_limite }).table("atividade").then(data => {
+        database.insert({ds_titulo,ds_atividade,dt_limite }).table("atividade").then(data => {
             console.log(data);
-            response.json({ message: "Atividade criada com sucesso" });
+            response.status(201).json({ message: "Atividade criada com sucesso" });
         }).catch(error => {
             console.log(error);
         });
@@ -37,17 +37,26 @@ class TaskController {
     }
 
     atualizaTask(request, response) {
-        const id = request.params
-        const {descricao} = params.body
-        console.log(id)
-        database.where(id).update({descricao:descricao}).table("atividade").then(atividade => { 
+        const id_atividade = request.params.id_atividade;
+        const { ds_titulo, ds_descricao, dt_entrega } = request.body;
+        database.where({ id_atividade }).update({ ds_titulo, ds_descricao, dt_entrega }).table("atividade").then(atividade => { 
             response.json("atividade atualizada com sucesso");
         }).catch(error => {
             console.log("Database error:", error);
-            response.status(500).json({error: 'ao atualizar uma tarefa'});
+            response.status(500).json({error: 'Erro ao atualizar uma tarefa'});
         });
     }
 
+    deletaTask(request, response) {
+        console.log(request.params)
+        const id = request.params
+        database.where(id).del().table("atividade").then(atividade => { 
+            response.json("atividade deletada com sucesso");
+        }).catch(error => {
+            console.log("Database error:", error);
+            response.status(500).json({error: 'ao deletar uma tarefa'});
+        });
+    }
 
 }
 

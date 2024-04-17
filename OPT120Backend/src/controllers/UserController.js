@@ -2,13 +2,13 @@ const database = require('../database/connection');
 
 class UserController {
     novoUsuario(request, response) {
-        const {id_user,nm_user,nm_email,cd_senha} = request.body;
+        console.log(request.body)
+        const {nm_user,nm_email,cd_senha} = request.body;
 
-        console.log(id_user, nm_user, nm_email, cd_senha)
+        console.log(nm_user, nm_email, cd_senha)
 
-        database.insert({ id_user, nm_user, nm_email, cd_senha }).table("usuario").then(data => {
-            console.log(data);
-            response.json({ message: "Usuário criado com sucesso" });
+        database.insert({nm_user, nm_email, cd_senha }).table("usuario").then(data => {
+            response.status(201).json({ message: "Usuário criado com sucesso" });
         }).catch(error => {
             console.log(error);
         });
@@ -32,6 +32,27 @@ class UserController {
         }).catch(error => {
             console.log("Database error:", error);
             response.status(500).json({error: 'Um erro ocorreu ao puxar um usuárioS'});
+        });
+    }
+    atualizaUser(request, response) {
+        console.log(request.params.id_user)
+        const id_user = request.params.id_user;
+        const { nm_user, nm_email, cd_senha } = request.body;
+        database.where({ id_user }).update({ nm_user, nm_email, cd_senha }).table("usuario").then(usuario => { 
+            response.json("usuário atualizado com sucesso");
+        }).catch(error => {
+            console.log("Database error:", error);
+            response.status(500).json({error: 'Erro ao atualizar um usuário'});
+        });
+    }
+    
+    deletaUser(request, response) {
+        const id = request.params
+        database.where(id).del().table("usuario").then(usuario => { 
+            response.json("usuário deletado com sucesso");
+        }).catch(error => {
+            console.log("Database error:", error);
+            response.status(500).json({error: 'ao deletar um usuário'});
         });
     }
 
