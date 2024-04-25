@@ -17,7 +17,7 @@ router.get('/task/:id_atividade', TaskController.umaTask);
 router.put('/atualizar/task/:id_atividade', TaskController.atualizaTask);
 router.delete('/deletar/task/:id_atividade', TaskController.deletaTask);
 
-router.post('/user/:id_user/task/:id_atividade', UserTaskController.usuarioFezTarefa);
+router.post('/UsuarioFezAtividade', UserTaskController.usuarioFezTarefa);
 router.get('/task/:id_atividade/user', UserTaskController.todosUsuariosFizeramTask);
 router.get('/user/:id_user/task/', UserTaskController.todasTarefasUsuarioFez);
 router.get('/all', UserTaskController.tudotudao);
