@@ -39,16 +39,44 @@ class UserTaskController {
                     response.status(500).json({error: 'Usuário não fez nenhuma tarefa'});
                 });
         }
-    tudotudao(request, response) {
-        const id_user = request.params.id_user;
-        database
-            .select("*")
-            .from("usuario_atividade")
-            .then(results => {
-                response.json(results);
+        tudotudao(request, response) {
+            database.select("*").table("usuario_atividade").then(atividades => { 
+                // Converter o id_atividade para string
+                atividades.forEach(atividade => {
+                    atividade.id_atividade = atividade.id_atividade.toString();
+                });
+                console.log(atividades)
+                response.json(atividades);
             }).catch(error => {
                 console.log("Database error:", error);
-                response.status(500).json({error: 'Usuário não fez nenhuma tarefa'});
+                response.status(500).json({error: 'um erro ocorreu ao puxar todas as task'});
+            });
+        }
+        
+
+    atualizarUserTask(request, response) {
+        const {id_user, id_atividade, dt_entrega, nr_nota} = request.body;
+        database('usuario_atividade')
+            .where({ id_user, id_atividade })
+            .update({ dt_entrega, nr_nota })
+            .then(data => {
+                response.json({ message: "Tarefa do usuário atualizada com sucesso" });
+            }).catch(error => {
+                console.log(error);
+                response.status(500).json({error: 'Erro ao atualizar tarefa do usuário'});
+            });
+    }
+    
+    deletarUserTask(request, response) {
+        const {id_user, id_atividade} = request.body;
+        database('usuario_atividade')
+            .where({ id_user, id_atividade })
+            .del()
+            .then(data => {
+                response.json({ message: "Tarefa do usuário deletada com sucesso" });
+            }).catch(error => {
+                console.log(error);
+                response.status(500).json({error: 'Erro ao deletar tarefa do usuário'});
             });
     }
 }
