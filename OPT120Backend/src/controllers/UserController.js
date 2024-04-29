@@ -1,4 +1,6 @@
 const database = require('../database/connection');
+const jwt = require('jsonwebtoken');
+const expressJwt = require('express-jwt');
 
 class UserController {
     novoUsuario(request, response) {
@@ -39,7 +41,7 @@ class UserController {
         const id_user = request.params.id_user;
         const { nm_user, nm_email, cd_senha } = request.body;
         database.where({ id_user }).update({ nm_user, nm_email, cd_senha }).table("usuario").then(usuario => { 
-            response.json("usuário atualizado com sucesso");
+            response.status(200).json({message: 'usuário atualizado com sucesso'});
         }).catch(error => {
             console.log("Database error:", error);
             response.status(500).json({error: 'Erro ao atualizar um usuário'});
